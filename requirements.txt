@@ -1,0 +1,6 @@
+langgraph
+langchain-openai
+langchain-community
+yfinance
+gradio
+python-dotenv
