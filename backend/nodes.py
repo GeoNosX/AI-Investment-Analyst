@@ -1,14 +1,13 @@
-from .state import Fin_State
-from .tools import tools
+from state import Fin_State
+from tools import tools
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import AIMessage, ToolMessage
-from .llm import llm
-from .prompts import report_analyst_system_prompt
+from llm import llm
+from prompts import report_analyst_system_prompt
 
-
-            
 
 llm_with_tools = llm.bind_tools(tools)
+
 def data_fetch(state: Fin_State):
     """
     Decides which tools to call.
@@ -41,19 +40,15 @@ def process_tool_results(state: Fin_State) -> Fin_State:
 
     for m in reversed(messages):
         if isinstance(m, ToolMessage):
-
             if m.name == 'get_fin_data':
                 new_fin = m.content
-
             elif m.name in ['news_yh_search', 'serper_search']:
-
                 if m.content not in new_news:
                     new_news.append(m.content)
         elif isinstance(m, AIMessage):
-
             break
-
-    return {"financials": new_fin, "news": new_news}
+    return {"financials": new_fin,
+             "news": new_news}
 
 def sum_fin_report(state: Fin_State) -> Fin_State:
 
