@@ -2,6 +2,8 @@ from langchain_core.tools import tool
 from langchain_community.tools.yahoo_finance_news import YahooFinanceNewsTool
 from langchain_community.utilities import GoogleSerperAPIWrapper
 import yfinance as yf
+serper = GoogleSerperAPIWrapper()
+
 
 @tool
 def news_yh_search(ticker: str):
@@ -11,8 +13,6 @@ def news_yh_search(ticker: str):
     # YahooFinanceNewsTool wrapper
     tool_instance = YahooFinanceNewsTool()
     return tool_instance.run(f"{ticker}")
-
-serper = GoogleSerperAPIWrapper()
 
 @tool
 def get_fin_data(ticker: str):
