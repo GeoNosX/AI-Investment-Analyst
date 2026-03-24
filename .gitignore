@@ -1,3 +1,20 @@
 .env
 __pycache__/
 
+# Environments
+venv/
+env/
+.env
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store

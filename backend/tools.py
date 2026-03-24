@@ -2,6 +2,8 @@ from langchain_core.tools import tool
 from langchain_community.tools.yahoo_finance_news import YahooFinanceNewsTool
 from langchain_community.utilities import GoogleSerperAPIWrapper
 import yfinance as yf
+from dotenv import load_dotenv
+load_dotenv()
 
 serper = GoogleSerperAPIWrapper()
 
