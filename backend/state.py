@@ -1,6 +1,6 @@
-from typing import Annotated, TypedDict, List, Any
-from langgraph.graph.message import add_messages ,BaseMessage
-from langgraph.channels.last_value import LastValue
+from typing import Annotated, List, Any, TypedDict
+from langgraph.graph.message import add_messages
+from langchain_core.messages import BaseMessage
 
 
 def merge_news(old: List[str], new: List[str]) -> List[str]:

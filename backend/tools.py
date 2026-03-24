@@ -10,12 +10,12 @@ serper = GoogleSerperAPIWrapper()
 
 @tool
 def news_yh_search(ticker: str):
-    """Find additional financial news about a stock
-    Args:
-          ticker: The ticker of a company in order to find news about it """
-    # YahooFinanceNewsTool wrapper
-    tool_instance = YahooFinanceNewsTool()
-    return tool_instance.run(f"{ticker}")
+    """Find additional financial news about a stock."""
+    try:
+        tool_instance = YahooFinanceNewsTool()
+        return tool_instance.run(f"{ticker}")
+    except Exception as e:
+        return "Yahoo Finance news is currently unavailable due to rate limits. Please rely on general search."
 
 @tool
 def get_fin_data(ticker: str):

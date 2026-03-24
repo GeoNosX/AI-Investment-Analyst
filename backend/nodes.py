@@ -56,11 +56,11 @@ def sum_fin_report(state: Fin_State) -> Fin_State:
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", "You are a financial analyst that summarizes financial data."),
-        ('user', f"Make a summary about this company's financial data:\n\n{fin_data}")
+        ('user', "Make a summary about this company's financial data:\n\n{fin_data}")
     ])
 
     chain = prompt | llm
-    summary = chain.invoke(state).content
+    summary = chain.invoke({"fin_data": fin_data}).content
     return {"summary": summary}
 
 def sentiment_analysis(state: Fin_State) -> Fin_State:
@@ -76,7 +76,7 @@ def sentiment_analysis(state: Fin_State) -> Fin_State:
     sentiment = chain.invoke({'news': news_text}).content
     return {"sentiment": sentiment}
 
-def report_analyst(state: Fin_State) -> Fin_State:
+async def report_analyst(state: Fin_State) -> Fin_State:
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", report_analyst_system_prompt),
@@ -96,5 +96,5 @@ def report_analyst(state: Fin_State) -> Fin_State:
     ])
 
     chain = prompt | llm
-    report = chain.invoke(state).content
-    return {"report": report}
+    response = await chain.ainvoke(state)
+    return {"report": response.content, "messages": [response]}
