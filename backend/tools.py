@@ -22,25 +22,25 @@ def news_yh_search(ticker: str):
         tool_instance = YahooFinanceNewsTool()
         return tool_instance.run(f"{ticker}")
     except Exception as e:
-        # THE SAFETY NET
+        
         return "⚠️ Yahoo Finance news is currently unavailable due to rate limits. Please rely on the 'serper_search' tool for news."
 
 @tool
 def get_fin_data(ticker: str):
     """Fetches financial data for a given ticker."""
     try:
-        # We pass the 'safe_session' disguise into the Ticker!
+        
         stock = yf.Ticker(ticker, session=safe_session)
         
         data = stock.info 
         
-        # Sometimes Yahoo soft-blocks by returning empty data instead of an error
+        
         if not data or len(data) <= 1:
             return f"⚠️ Yahoo Finance returned empty data for {ticker}. Please rely on general knowledge and serper_search."
             
         return str(data)
     except Exception as e:
-        # THE SAFETY NET
+        
         return "⚠️ Yahoo Finance is currently rate-limiting us. Please skip the detailed financials and write the report based on general knowledge."
 
 @tool
@@ -53,4 +53,4 @@ def serper_search(ticker: str):
     except Exception as e:
         return f"⚠️ Google Search failed."
 
-tools = [serper_search]
+tools = [get_fin_data, serper_search, news_yh_search]

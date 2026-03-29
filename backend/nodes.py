@@ -7,12 +7,12 @@ from prompts import report_analyst_system_prompt
 
 llm_with_tools = llm.bind_tools(tools)
 
-# FIX: Made async and used ainvoke
+
 async def data_fetch(state: Fin_State):
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are an AI financial analyst. You MUST use the 'serper_search' tool to gather:
-        - Recent financial metrics (revenue, EPS, etc.) for {ticker}.
-        - Latest news and market sentiment for {ticker}.
+        ("system", """You are an AI financial analyst. You MUST use the available tools to gather:
+        - Financial statements (balance sheet, cash flow) for {ticker} using the 'get_fin_data' tool.
+        - Latest news and market sentiment for {ticker} using 'serper_search' or 'news_yh_search'.
         
         Return the tool calls necessary to get this information. Do not output the final report yet."""),
         ("human", "Gather complete financial data and latest news for {ticker} stock.")
@@ -23,7 +23,7 @@ async def data_fetch(state: Fin_State):
 
     return {"messages": [response]}
 
-# FIX: Made async
+
 async def process_tool_results(state: Fin_State) -> Fin_State:
     messages = state["messages"]
     new_fin = state.get("financials", "")
@@ -41,7 +41,7 @@ async def process_tool_results(state: Fin_State) -> Fin_State:
             
     return {"financials": new_fin, "news": new_news}
 
-# FIX: Made async and used ainvoke
+
 async def sum_fin_report(state: Fin_State) -> Fin_State:
     fin_data = state.get('financials', 'No financial data available.')
 
@@ -54,7 +54,7 @@ async def sum_fin_report(state: Fin_State) -> Fin_State:
     response = await chain.ainvoke({"fin_data": fin_data})
     return {"summary": response.content}
 
-# FIX: Made async and used ainvoke
+
 async def sentiment_analysis(state: Fin_State) -> Fin_State:
     news_list = state.get('news', [])
     news_text = '\n'.join(news_list) if news_list else "No recent news found."
