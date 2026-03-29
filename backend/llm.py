@@ -9,6 +9,5 @@ llm = ChatOpenAI(
     model="meta/llama-3.1-70b-instruct", 
     api_key=os.getenv("NVIDIA_API_KEY"),
     base_url="https://integrate.api.nvidia.com/v1",
-    temperature=0.7,
-    streaming=True
+    temperature=0.5
 )
