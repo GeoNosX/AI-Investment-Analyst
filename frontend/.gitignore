@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# ------------------------
+# Python / FastAPI Backend
+# ------------------------
+venv/
+env/
+research_env/
+__pycache__/
+*.pyc
