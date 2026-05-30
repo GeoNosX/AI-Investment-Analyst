@@ -45,7 +45,7 @@ export default function Home() {
 
     setIsLoading(true);
 
-    // 2. Add an empty Bot Message to Chat (which we will fill up streamingly)
+    // 2. Add an empty Bot Message to Chat
     const botMessageId = userMessageId + 1;
     setMessages((prev) => [
       ...prev,
@@ -53,8 +53,9 @@ export default function Home() {
     ]);
 
     try {
-      // 3. Connect to your fixed FastAPI backend
-      const response = await fetch(`http://localhost:8000/analyze/${currentTicker}`);
+      // 3. Connect to backend using env variable, falling back to localhost
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${API_BASE_URL}/analyze/${currentTicker}`);
 
       if (!response.ok) throw new Error('Failed to connect to backend');
       if (!response.body) throw new Error('No response body');
@@ -131,21 +132,41 @@ export default function Home() {
                 </div>
               )}
               
-              {/* Conditional rendering: Markdown for Bot, raw text for User */}
+              {/* Conditional rendering: Dynamic Splitting for Bot, raw text for User */}
               {message.type === 'bot' ? (
-                <div className="prose prose-sm md:prose-base max-w-none prose-tables:border-collapse prose-th:border prose-th:bg-gray-50 prose-td:border prose-th:p-2 prose-td:p-2 prose-blue">
-                  
-                  {/* The Markdown Renderer */}
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {message.content}
-                  </ReactMarkdown>
-                  
-                  {/* Loading Spinner inside the bubble */}
-                  {isLoading && message.id === messages[messages.length - 1].id && message.content === "" && (
-                     <span className="inline-flex gap-2 items-center text-gray-400 italic not-prose mt-2">
-                       <LoaderCircle className="w-4 h-4 animate-spin" /> Gathering financial data & news...
-                     </span>
-                  )}
+                <div className="w-full">
+                  {/* Split the incoming stream text by your backend separator */}
+                  {(() => {
+                    // We only want to split if the agent has actually generated the separator
+                    const parts = message.content.split('\n\n---\n\n');
+                    const progressLogs = parts[0];
+                    const finalReport = parts.length > 1 ? parts.slice(1).join('\n\n---\n\n') : '';
+
+                    return (
+                      <div className="flex flex-col gap-2">
+                        {/* 1. Show Progress Logs */}
+                        {(!finalReport && progressLogs) && (
+                           <div className="text-sm text-gray-500 font-mono whitespace-pre-wrap bg-gray-50 p-3 rounded-lg border border-gray-100">
+                             {progressLogs}
+                             {isLoading && message.id === messages[messages.length - 1].id && (
+                               <span className="inline-flex gap-2 items-center text-blue-500 italic mt-2 block">
+                                 <LoaderCircle className="w-4 h-4 animate-spin" /> Gathering financial data & news...
+                               </span>
+                             )}
+                           </div>
+                        )}
+
+                        {/* 2. Show the Final Markdown Report */}
+                        {finalReport && (
+                          <div className="prose prose-sm md:prose-base max-w-none prose-tables:border-collapse prose-th:border prose-th:bg-gray-50 prose-td:border prose-th:p-2 prose-td:p-2 prose-blue">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {finalReport}
+                            </ReactMarkdown>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               ) : (
                 <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>

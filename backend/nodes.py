@@ -10,17 +10,13 @@ llm_with_tools = llm.bind_tools(tools)
 
 async def data_fetch(state: Fin_State):
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are an AI financial analyst. You MUST use the available tools to gather:
-        - Financial statements (balance sheet, cash flow) for {ticker} using the 'get_fin_data' tool.
-        - Latest news and market sentiment for {ticker} using 'serper_search' or 'news_yh_search'.
-        
-        Return the tool calls necessary to get this information. Do not output the final report yet."""),
+        ("system", "You are an institutional financial research assistant. Your task is to gather the necessary financial statements and recent news for the requested ticker using your tools."),
         ("human", "Gather complete financial data and latest news for {ticker} stock.")
     ])
 
     chain = prompt | llm_with_tools
     response = await chain.ainvoke({"ticker": state["ticker"]})
-
+    
     return {"messages": [response]}
 
 
